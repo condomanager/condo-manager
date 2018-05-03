@@ -1,4 +1,4 @@
-package br.com.condo.manager.model.entity;
+package br.com.condo.manager.api.model.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,10 +1,10 @@
-package br.com.condo.arch.controller;
+package br.com.condo.manager.arch.controller;
 
-import br.com.condo.arch.controller.exception.BadRequestException;
-import br.com.condo.arch.controller.exception.NotFoundException;
-import br.com.condo.arch.service.BaseSpringDataDAO;
-import br.com.condo.arch.service.SearchParameter;
-import br.com.condo.arch.service.SortParameter;
+import br.com.condo.manager.arch.controller.exception.BadRequestException;
+import br.com.condo.manager.arch.controller.exception.NotFoundException;
+import br.com.condo.manager.arch.service.BaseSpringDataDAO;
+import br.com.condo.manager.arch.service.SearchParameter;
+import br.com.condo.manager.arch.service.SortParameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

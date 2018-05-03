@@ -1,4 +1,4 @@
-package br.com.condo.arch.controller.exception;
+package br.com.condo.manager.arch.controller.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

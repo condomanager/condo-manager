@@ -1,6 +1,6 @@
-package br.com.condo.arch.service;
+package br.com.condo.manager.arch.service;
 
-import br.com.condo.arch.model.dto.FileMetadata;
+import br.com.condo.manager.arch.model.dto.FileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,16 +22,16 @@ public class FileDAO {
 
     protected Logger LOGGER = LoggerFactory.getLogger(FileDAO.class);
 
-    @Value("${omni.path.repository.root}")
-    private String fileRepositoryRoot;
+    @Value("${app.file.storage.root}")
+    private String fileStorageRoot;
 
     /**
-     * <p>Informa o endereço físico em disco do diretório raiz de todos os repositórios de arquivos.</p>
+     * <p>Informa o endereço físico em disco do diretório raiz de armazenamento de de arquivos.</p>
      *
-     * @return o endereço configurado como diretório raiz do repositório de arquivos
+     * @return o endereço configurado como diretório raiz de armazenamento de arquivos
      */
-    public Path getFileRepositoryRootPath() {
-        return Paths.get(fileRepositoryRoot);
+    public Path getFileStorageRootPath() {
+        return Paths.get(fileStorageRoot);
     }
 
     /**

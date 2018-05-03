@@ -1,6 +1,6 @@
-package br.com.condo.arch.service;
+package br.com.condo.manager.arch.service;
 
-import br.com.condo.arch.service.repository.SpringDataRepository;
+import br.com.condo.manager.arch.service.repository.SpringDataRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

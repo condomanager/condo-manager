@@ -1,4 +1,4 @@
-package br.com.condo.arch.service;
+package br.com.condo.manager.arch.service;
 
 public class SortParameter {
 

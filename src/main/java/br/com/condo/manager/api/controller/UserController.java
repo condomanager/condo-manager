@@ -1,7 +1,7 @@
-package br.com.condo.manager.controller;
+package br.com.condo.manager.api.controller;
 
-import br.com.condo.arch.controller.BaseEndpoint;
-import br.com.condo.manager.model.entity.User;
+import br.com.condo.manager.arch.controller.BaseEndpoint;
+import br.com.condo.manager.api.model.entity.User;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

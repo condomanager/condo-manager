@@ -1,4 +1,4 @@
-package br.com.condo.arch.model.dto;
+package br.com.condo.manager.arch.model.dto;
 
 import lombok.Data;
 import org.springframework.lang.Nullable;

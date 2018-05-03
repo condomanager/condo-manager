@@ -1,4 +1,4 @@
-package br.com.condo.arch.service;
+package br.com.condo.manager.arch.service;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
