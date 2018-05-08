@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Method;
@@ -31,7 +30,7 @@ public class EndpointAuditAspect {
     @Pointcut("@annotation(org.springframework.web.bind.annotation.GetMapping) || @annotation(org.springframework.web.bind.annotation.PostMapping) || @annotation(org.springframework.web.bind.annotation.PutMapping) || @annotation(org.springframework.web.bind.annotation.DeleteMapping) || @annotation(org.springframework.web.bind.annotation.RequestMapping)")
     public void mappedEndpointExecution(){}
 
-    @Around("mappedEndpointExecution()")@RequestMapping
+    @Around("mappedEndpointExecution()")
     public Object AuditEndpointExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         long startingTime = System.currentTimeMillis();
         Long userId = Long.valueOf(1); // FIXME: adquirir o valor do ID do usuário autenticado
