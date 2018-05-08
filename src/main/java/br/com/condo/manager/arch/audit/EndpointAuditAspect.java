@@ -38,7 +38,7 @@ public class EndpointAuditAspect {
         String action = joinPoint.getTarget().getClass().getSimpleName() + "#" + joinPoint.getSignature().getName();
 
         Object joinPointResult = joinPoint.proceed();
-        if(joinPointResult instanceof ResponseEntity && !((ResponseEntity) joinPointResult).getStatusCode().isError()) {
+        if(joinPointResult == null || (joinPointResult instanceof ResponseEntity && !((ResponseEntity) joinPointResult).getStatusCode().isError())) {
             try {
                 long executionTime = System.currentTimeMillis() - startingTime;
 

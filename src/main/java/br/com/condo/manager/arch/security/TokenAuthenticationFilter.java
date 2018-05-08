@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    private static final String BEARER = "Bearer";
+    private static final String AUTHORIZATION_TYPE = "Bearer";
 
     TokenAuthenticationFilter(final RequestMatcher requiresAuth) {
         super(requiresAuth);
@@ -25,12 +25,12 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
 
     @Override
     public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response) {
-        final String param = Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION)).orElse(request.getParameter("token"));
+        final String param = Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION)).orElse(request.getParameter(HttpHeaders.AUTHORIZATION));
 
         final String token = Optional.ofNullable(param)
-                .map(value -> StringUtils.removeStart(value, BEARER))
+                .map(value -> StringUtils.removeStart(value, AUTHORIZATION_TYPE))
                 .map(String::trim)
-                .orElseThrow(() -> new BadCredentialsException("Missing Authentication Token"));
+                .orElseThrow(() -> new BadCredentialsException("Authentication token is required"));
 
         final Authentication auth = new UsernamePasswordAuthenticationToken(token, token);
         return getAuthenticationManager().authenticate(auth);
