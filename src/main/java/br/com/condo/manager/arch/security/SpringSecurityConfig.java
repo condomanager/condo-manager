@@ -28,7 +28,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(
         new AntPathRequestMatcher("/login"),
         new AntPathRequestMatcher("*/login"),
-        new AntPathRequestMatcher("**/login**")
+        new AntPathRequestMatcher("**/login**"),
+            new AntPathRequestMatcher("/graphiql"),
+            new AntPathRequestMatcher("*/graphiql"),
+            new AntPathRequestMatcher("**/graphiql**"),
+            new AntPathRequestMatcher("/graphql"),
+            new AntPathRequestMatcher("*/graphql"),
+            new AntPathRequestMatcher("**/graphql**")
     );
     private static final RequestMatcher PROTECTED_URLS = new NegatedRequestMatcher(PUBLIC_URLS);
 

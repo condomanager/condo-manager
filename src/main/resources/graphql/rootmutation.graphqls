@@ -1,0 +1,4 @@
+# The Root Mutation for the application
+type Mutation {
+    saveUser(user: User!) : User!
+}
