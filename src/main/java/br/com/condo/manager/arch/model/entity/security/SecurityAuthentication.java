@@ -1,4 +1,4 @@
-package br.com.condo.manager.arch.model.entity;
+package br.com.condo.manager.arch.model.entity.security;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +9,10 @@ import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "authentication")
+@Table(name = "security_authentication")
 @Data
 @NoArgsConstructor
-public class Authentication implements Serializable {
+public class SecurityAuthentication implements Serializable {
 
     private static final long serialVersionUID = -2483802044062703779L;
 
@@ -20,9 +20,9 @@ public class Authentication implements Serializable {
     @Column(name = "id")
     private String id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "fk_user_credentials")
-    private UserCredentials userCredentials;
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "fk_security_credentials")
+    private SecurityCredentials securityCredentials;
 
     @Column(name = "login_date")
     private Date loginDate;
@@ -30,11 +30,11 @@ public class Authentication implements Serializable {
     @Column(name = "logout_date")
     private Date logoutDate;
 
-    public Authentication(UserCredentials userCredentials) {
-        this.userCredentials = userCredentials;
+    public SecurityAuthentication(SecurityCredentials securityCredentials) {
+        this.securityCredentials = securityCredentials;
         this.loginDate = new Date();
 
-        String seed = this.userCredentials.getId().toString() + "_" + String.valueOf(loginDate.getTime());
+        String seed = this.securityCredentials.getId().toString() + "_" + String.valueOf(loginDate.getTime());
         this.id = UUID.nameUUIDFromBytes(seed.getBytes()).toString();
     }
 
