@@ -1,7 +1,9 @@
 package br.com.condo.manager.arch.security;
 
-import br.com.condo.manager.arch.model.entity.Authentication;
-import br.com.condo.manager.arch.service.AuthenticationDAO;
+import br.com.condo.manager.arch.model.entity.security.SecurityAuthentication;
+import br.com.condo.manager.arch.model.entity.security.SecurityPrivilege;
+import br.com.condo.manager.arch.model.entity.security.SecurityProfile;
+import br.com.condo.manager.arch.service.security.SecurityAuthenticationDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
@@ -10,13 +12,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
-    AuthenticationDAO authenticationDAO;
+    SecurityAuthenticationDAO securityAuthenticationDAO;
 
     @Override
     protected void additionalAuthenticationChecks(final UserDetails d, final UsernamePasswordAuthenticationToken auth) {
@@ -27,13 +31,18 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
     protected UserDetails retrieveUser(final String username, final UsernamePasswordAuthenticationToken authentication) {
         final String token = String.valueOf(authentication.getCredentials());
 
-        Authentication auth = authenticationDAO.retrieve(token).orElseThrow(() -> new UsernameNotFoundException("Invalid authentication token " + token));
+        SecurityAuthentication auth = securityAuthenticationDAO.retrieve(token).orElseThrow(() -> new UsernameNotFoundException("Invalid authorization token " + token));
 
-        return User
+        List<String> roles = auth.getSecurityCredentials().getSecurityProfiles().stream().map(SecurityProfile::getName).collect(Collectors.toList());
+        List<String> authorities = auth.getSecurityCredentials().getSecurityProfiles().stream().flatMap(sp -> sp.getSecurityPrivileges().stream().map(SecurityPrivilege::getName)).collect(Collectors.toList());
+
+        UserDetails user = User
                 .builder()
-                .username(auth.getUserCredentials().getUsername())
-                .password(auth.getUserCredentials().getPassword())
-                .authorities("USER")
+                .username(auth.getSecurityCredentials().getUsername())
+                .password(auth.getSecurityCredentials().getPassword())
+                .roles(roles.toArray(new String[0]))
+                .authorities(authorities.toArray(new String[0]))
                 .build();
+        return user;
     }
 }

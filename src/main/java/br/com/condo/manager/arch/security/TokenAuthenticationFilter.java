@@ -30,7 +30,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         final String token = Optional.ofNullable(param)
                 .map(value -> StringUtils.removeStart(value, AUTHORIZATION_TYPE))
                 .map(String::trim)
-                .orElseThrow(() -> new BadCredentialsException("Authentication token is required"));
+                .orElseThrow(() -> new BadCredentialsException("SecurityAuthentication token is required"));
 
         final Authentication auth = new UsernamePasswordAuthenticationToken(token, token);
         return getAuthenticationManager().authenticate(auth);

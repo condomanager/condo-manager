@@ -1,6 +1,9 @@
 package br.com.condo.manager.arch.service;
 
 import br.com.condo.manager.arch.service.repository.SpringDataRepository;
+import br.com.condo.manager.arch.service.util.SearchParameter;
+import br.com.condo.manager.arch.service.util.SearchSpecification;
+import br.com.condo.manager.arch.service.util.SortParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

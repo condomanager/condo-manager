@@ -1,6 +1,8 @@
 package br.com.condo.manager.arch.audit;
 
 import br.com.condo.manager.arch.model.entity.EndpointAudit;
+import br.com.condo.manager.arch.model.entity.security.SecurityCredentials;
+import br.com.condo.manager.arch.security.SecurityUtils;
 import br.com.condo.manager.arch.service.EndpointAuditDAO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -33,7 +35,8 @@ public class EndpointAuditAspect {
     @Around("mappedEndpointExecution()")
     public Object AuditEndpointExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         long startingTime = System.currentTimeMillis();
-        Long userId = Long.valueOf(1); // FIXME: adquirir o valor do ID do usuário autenticado
+        SecurityCredentials authenticatedCredentials = SecurityUtils.authenticatedCredentials();
+        Long userId = authenticatedCredentials != null ? authenticatedCredentials.getId() : null;
         Date executionDate = new Date(startingTime);
         String action = joinPoint.getTarget().getClass().getSimpleName() + "#" + joinPoint.getSignature().getName();
 
