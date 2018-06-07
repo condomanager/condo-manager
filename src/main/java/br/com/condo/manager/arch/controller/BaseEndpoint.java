@@ -2,6 +2,7 @@ package br.com.condo.manager.arch.controller;
 
 import br.com.condo.manager.arch.controller.exception.BadRequestException;
 import br.com.condo.manager.arch.controller.exception.NotFoundException;
+import br.com.condo.manager.arch.security.SecurityUtils;
 import br.com.condo.manager.arch.service.BaseSpringDataDAO;
 import br.com.condo.manager.arch.service.util.SearchParameter;
 import br.com.condo.manager.arch.service.util.SortParameter;
@@ -36,6 +37,9 @@ public abstract class BaseEndpoint<E extends Serializable, P extends Serializabl
 
     @Autowired
     protected BaseSpringDataDAO<E, P> dao;
+
+    @Autowired
+    protected SecurityUtils securityUtils;
 
     private Class entityType;
 
