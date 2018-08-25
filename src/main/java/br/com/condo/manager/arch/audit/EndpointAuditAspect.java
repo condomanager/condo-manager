@@ -27,6 +27,9 @@ public class EndpointAuditAspect {
     protected Logger LOGGER = LoggerFactory.getLogger(EndpointAuditAspect.class);
 
     @Autowired
+    SecurityUtils securityUtils;
+
+    @Autowired
     private EndpointAuditDAO endpointAuditDAO;
 
     @Pointcut("@annotation(org.springframework.web.bind.annotation.GetMapping) || @annotation(org.springframework.web.bind.annotation.PostMapping) || @annotation(org.springframework.web.bind.annotation.PutMapping) || @annotation(org.springframework.web.bind.annotation.DeleteMapping) || @annotation(org.springframework.web.bind.annotation.RequestMapping)")
@@ -35,7 +38,7 @@ public class EndpointAuditAspect {
     @Around("mappedEndpointExecution()")
     public Object AuditEndpointExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         long startingTime = System.currentTimeMillis();
-        SecurityCredentials authenticatedCredentials = SecurityUtils.authenticatedCredentials();
+        SecurityCredentials authenticatedCredentials = securityUtils.authenticatedCredentials();
         Long userId = authenticatedCredentials != null ? authenticatedCredentials.getId() : null;
         Date executionDate = new Date(startingTime);
         String action = joinPoint.getTarget().getClass().getSimpleName() + "#" + joinPoint.getSignature().getName();
