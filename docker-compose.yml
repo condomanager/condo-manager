@@ -1,0 +1,30 @@
+version: '3'
+services:
+  condo-manager-service:
+    # build: . # manda o compose realizar o build a partir do diretório corrente
+    image: br.com.condo.manager/condo-manager-service:v2 # manda o compose baixar desse repositório a imagem
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysqldb
+    links:
+      - mysqldb
+  mysqldb:
+    image: mysql/mysql-server:5.7
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=manager
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=123456
+    volumes:
+      - /data/mysql
+#  postgresdb:
+#    image: postgres
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      - POSTGRES_PASSWORD=123456
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_DB=manager

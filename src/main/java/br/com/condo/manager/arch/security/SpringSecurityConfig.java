@@ -3,6 +3,7 @@ package br.com.condo.manager.arch.security;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -36,7 +37,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             new AntPathRequestMatcher("**/graphiql**"),
             new AntPathRequestMatcher("/graphql"),
             new AntPathRequestMatcher("*/graphql"),
-            new AntPathRequestMatcher("**/graphql**")
+            new AntPathRequestMatcher("**/graphql**"),
+            new AntPathRequestMatcher("/subscriptions**"),
+            new AntPathRequestMatcher("**/subscriptions**"),
+            new AntPathRequestMatcher("/vendor**"),
+            new AntPathRequestMatcher("**/vendor**")
     );
     private static final RequestMatcher PROTECTED_URLS = new NegatedRequestMatcher(PUBLIC_URLS);
 
@@ -65,18 +70,21 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 // this entry point handles when you request a protected page and you are not yet authenticated
                 .exceptionHandling()
-                .defaultAuthenticationEntryPointFor(unauthorizedEntryPoint(), PROTECTED_URLS)
+//                .defaultAuthenticationEntryPointFor(unauthorizedEntryPoint(), PROTECTED_URLS)
             .and()
                 .authenticationProvider(provider)
                 .addFilterBefore(tokenAuthenticationFilter(), AnonymousAuthenticationFilter.class)
                 .authorizeRequests()
-                .anyRequest()
-                .authenticated()
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
+                .requestMatchers(PUBLIC_URLS).permitAll()
+                .anyRequest().authenticated()
             .and()
             .csrf().disable()
             .formLogin().disable()
             .httpBasic().disable()
-            .logout().disable();
+            .logout().disable()
+        .headers()
+                .frameOptions().disable();
     }
 
     @Bean

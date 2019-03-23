@@ -1,4 +1,4 @@
 # The Root Mutation for the application
 type Mutation {
-    saveUser(user: User!) : User!
+    saveUser(input: UserInput) : User!
 }

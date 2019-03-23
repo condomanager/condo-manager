@@ -3,3 +3,8 @@ type User {
     name: String!
     email: String!
 }
+
+input UserInput {
+    name: String!
+    email: String!
+}

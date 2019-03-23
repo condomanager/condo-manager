@@ -4,6 +4,8 @@ import br.com.condo.manager.arch.model.entity.EndpointAudit;
 import br.com.condo.manager.arch.model.entity.security.SecurityCredentials;
 import br.com.condo.manager.arch.security.SecurityUtils;
 import br.com.condo.manager.arch.service.EndpointAuditDAO;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -43,18 +45,23 @@ public class EndpointAuditAspect {
         Date executionDate = new Date(startingTime);
         String action = joinPoint.getTarget().getClass().getSimpleName() + "#" + joinPoint.getSignature().getName();
 
+
         Object joinPointResult = joinPoint.proceed();
-        if(joinPointResult == null || (joinPointResult instanceof ResponseEntity && !((ResponseEntity) joinPointResult).getStatusCode().isError())) {
-            try {
-                long executionTime = System.currentTimeMillis() - startingTime;
+        if(!action.contains("GraphiQLController")) {
+            if (joinPointResult == null || (joinPointResult instanceof ResponseEntity && !((ResponseEntity) joinPointResult).getStatusCode().isError())) {
+                try {
+                    long executionTime = System.currentTimeMillis() - startingTime;
 
-                Map<String, Object> map = getPayloadMap(joinPoint.getTarget().getClass(), joinPoint.getSignature().getName(), joinPoint.getArgs());
-                String payload = new ObjectMapper().writeValueAsString(map);
+                    Map<String, Object> map = getPayloadMap(joinPoint.getTarget().getClass(), joinPoint.getSignature().getName(), joinPoint.getArgs());
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+                    String payload = objectMapper.writeValueAsString(map);
 
-                EndpointAudit audit = endpointAuditDAO.create(new EndpointAudit(executionDate, userId, action, payload, executionTime));
-                LOGGER.info(audit.toString());
-            } catch (Exception e) {
-                LOGGER.error("There was an error auditing the request: {userId: " + userId + ", action: " + action + "}", e);
+                    EndpointAudit audit = endpointAuditDAO.create(new EndpointAudit(executionDate, userId, action, payload, executionTime));
+                    LOGGER.info(audit.toString());
+                } catch (Exception e) {
+                    LOGGER.error("There was an error auditing the request: {userId: " + userId + ", action: " + action + "}", e);
+                }
             }
         }
 
