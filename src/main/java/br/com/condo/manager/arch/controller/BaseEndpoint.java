@@ -515,11 +515,11 @@ public abstract class BaseEndpoint<E extends Serializable, P extends Serializabl
         } else if(castingTo.isEnum() || Enum.class.isAssignableFrom(castingTo)) {
             return Enum.valueOf(castingTo, value.toUpperCase());
         } else if(Integer.class.equals(castingTo) || int.class.equals(castingTo)) {
-            return new Integer(value);
+            return Integer.valueOf(value);
         } else if(Long.class.equals(castingTo) || long.class.equals(castingTo)) {
-            return new Long(value);
+            return Long.valueOf(value);
         } else if(Double.class.equals(castingTo) || double.class.equals(castingTo)) {
-            return new Double(value);
+            return Double.valueOf(value);
         } else if(Boolean.class.equals(castingTo) || boolean.class.equals(castingTo)) {
             if(value.equals("1") || value.equalsIgnoreCase("true"))
                 return Boolean.TRUE;

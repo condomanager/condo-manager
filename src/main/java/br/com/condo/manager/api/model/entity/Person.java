@@ -7,24 +7,27 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "building")
+@Table(name = "person")
 @Data
 @NoArgsConstructor
-public class Building implements Serializable {
+public class Person implements Serializable {
 
-    private static final long serialVersionUID = -4108788278133915312L;
+    private static final long serialVersionUID = -780346953789267213L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
+    @Column
     private String name;
 
-    @Column(name = "description")
-    private String description;
+    @Column
+    private String cpf;
 
-    @Column(name = "doors")
-    private Integer doors;
+    @Column
+    private String fone;
+
+    @Column
+    private String email;
 
 }
