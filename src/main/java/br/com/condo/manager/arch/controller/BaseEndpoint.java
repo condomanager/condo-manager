@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -81,6 +82,7 @@ public abstract class BaseEndpoint<E extends Serializable, P extends Serializabl
     public ResponseEntity<E> update(@PathVariable P id, @RequestBody E requestData) {
         E retrieveResult = retrieveResource(id);
         E dataToUpdate = validateRequestDataForUpdate(requestData, retrieveResult);
+        updateId(dataToUpdate, id);
         E updateResult = dao.update(dataToUpdate);
         return new ResponseEntity<>(updateResult, HttpStatus.OK);
     }
@@ -539,6 +541,17 @@ public abstract class BaseEndpoint<E extends Serializable, P extends Serializabl
             entityType = (Class<E>) type.getActualTypeArguments()[0];
         }
         return entityType;
+    }
+
+    private boolean updateId(E data, P value) {
+        Field field = dao.getIdField();
+        try {
+            field.setAccessible(true);
+            field.set(data, value);
+            return true;
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
 }
