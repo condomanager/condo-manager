@@ -625,7 +625,7 @@ public abstract class BaseSpringDataDAO<E extends Serializable, P extends Serial
      * <code>null</code>, caso não encontre
      */
     @Nullable
-    private Field getIdField() {
+    public Field getIdField() {
         if (idField == null) {
             final ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
             Class<E> entityType = (Class<E>) (type).getActualTypeArguments()[0];
