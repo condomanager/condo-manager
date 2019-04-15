@@ -20,17 +20,17 @@ public class ResidenceGroup implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
+    @Column
     private String name;
 
-    @Column(name = "description")
+    @Column
     private String description;
 
-    @Column(name = "doors")
+    @Column
     private Integer doors;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", orphanRemoval = true)
     private List<Residence> residences;
 
 }

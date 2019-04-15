@@ -1,23 +1,24 @@
--- SELECT * FROM security_credentials;
+-- CREDENCIAIS DE SEGURANÇA
 INSERT INTO security_credentials(username, password, enabled, expired, locked) VALUES('admin', 'admin', 1, 0, 0);
-INSERT INTO security_credentials(username, password, enabled, expired, locked) VALUES('manager', 'manager', 1, 0, 0);
-INSERT INTO security_credentials(username, password, enabled, expired, locked) VALUES('employee', 'employee', 1, 0, 0);
+INSERT INTO security_credentials(username, password, enabled, expired, locked) VALUES('sindico', '1234', 1, 0, 0);
+INSERT INTO security_credentials(username, password, enabled, expired, locked) VALUES('portaria', '1234', 1, 0, 0);
+INSERT INTO security_credentials(username, password, enabled, expired, locked) VALUES('morador', '1234', 1, 0, 0);
 
--- SELECT * FROM security_authentication;
+-- PERFIS (PAPÉIS) DE SEGURANÇA
+INSERT INTO security_profile(name) VALUES('ADMIN'), ('MANAGER'), ('CONCIERGE'), ('DWELLER');
 
--- SELECT * FROM security_profile;
-INSERT INTO security_profile(name) VALUES('ADMIN'), ('MANAGER'), ('COMMISION'), ('EMPLOYEE'), ('RESIDENT');
+-- PRIVILÉGIOS (PERMISSÕES) DE SEGURANÇA
+INSERT INTO security_privilege(name) VALUES('MANAGE_RESIDENCE_GROUPS'), ('MANAGE_RESIDENCES'), ('MANAGE_VISITS'), ('MANAGE_WHITE_LIST');
 
--- SELECT * FROM security_privilege;
-INSERT INTO security_privilege(name) VALUES('MANAGE_BUILDINGS'), ('MANAGE_RESIDENCES'), ('MANAGE_EMPLOYEES'), ('MANAGE_USERS');
-INSERT INTO security_privilege(name) VALUES('PAINT_BUILDINGS');
-
--- SELECT * FROM security_profile_privileges;
+-- RELAÇÕES DE PERFIS E PRIVILÉGIOS;
 INSERT INTO security_profile_privileges(fk_security_profile, fk_security_privilege)
-VALUES(1,1), (1,2), (1,3), (1,4),
-(2,3), (2,4),
-(3,3);
-INSERT INTO security_profile_privileges(fk_security_profile, fk_security_privilege) VALUES(4,5);
+VALUES(2,1), (2,2), -- MANAGER
+(3,3), -- CONCIERGE
+(4,4); -- DWELLER
 
--- SELECT * FROM security_credentials_profiles;
-INSERT INTO security_credentials_profiles(fk_security_credentials, fk_security_profile) VALUES(1,1), (2,2), (3,4);
+-- RELAÇÃO DE USUÁRIOS E PERFIS
+INSERT INTO security_credentials_profiles(fk_security_credentials, fk_security_profile)
+VALUES(1,1), -- admin, PERFIL 'ADMIN'
+(2,2), (2,4), -- sindico, PERFIL 'MANAGER' E 'DWELLER'
+(3,3), -- portaria, PERFIL 'CONCIERGE'
+(4,4); -- morador, PERFIL 'DWELLER'

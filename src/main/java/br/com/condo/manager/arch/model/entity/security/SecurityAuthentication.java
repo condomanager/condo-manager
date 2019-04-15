@@ -21,7 +21,7 @@ public class SecurityAuthentication implements Serializable {
     private String id;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "fk_security_credentials")
+    @JoinColumn(name = "security_credentials_id")
     private SecurityCredentials securityCredentials;
 
     @Column(name = "login_date")

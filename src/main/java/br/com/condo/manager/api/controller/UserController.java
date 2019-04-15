@@ -1,10 +1,8 @@
 package br.com.condo.manager.api.controller;
 
+import br.com.condo.manager.api.model.entity.Phone;
 import br.com.condo.manager.arch.controller.BaseEndpoint;
-import br.com.condo.manager.api.model.entity.User;
 import br.com.condo.manager.arch.model.entity.security.SecurityCredentials;
-import br.com.condo.manager.arch.security.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("user")
-public class UserController extends BaseEndpoint<User, Long> {
+public class UserController extends BaseEndpoint<Phone, Long> {
 
     @PreAuthorize("hasRole('DO_NOTHING')")
     @GetMapping(value = {"/nothing/role"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

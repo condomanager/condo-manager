@@ -26,8 +26,8 @@ public class SecurityProfile implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "security_profile_privileges",
-            joinColumns = @JoinColumn(name = "fk_security_profile", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "fk_security_privilege", referencedColumnName = "id"))
+            joinColumns = @JoinColumn(name = "security_profile_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "security_privilege_id", referencedColumnName = "id"))
     @Fetch(FetchMode.SUBSELECT)
     private Collection<SecurityPrivilege> securityPrivileges;
 

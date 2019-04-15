@@ -11,6 +11,11 @@ import java.util.Optional;
 @Service
 public class SecurityCredentialsDAO extends BaseSpringDataDAO<SecurityCredentials, Long> {
 
+    public boolean checkAvailability(String username) {
+        Long occurrences = count(new SearchParameter("username", SearchParameter.Operator.EQUAL, username));
+        return occurrences.equals(0L);
+    }
+
     public Optional<SecurityCredentials> retrieve(String username) {
         Collection<SecurityCredentials> credentialsCollection = find(new SearchParameter("username", SearchParameter.Operator.EQUAL, username));
         if(credentialsCollection.isEmpty()) return Optional.empty();

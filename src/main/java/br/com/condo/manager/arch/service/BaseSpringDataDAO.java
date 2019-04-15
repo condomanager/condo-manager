@@ -116,8 +116,7 @@ public abstract class BaseSpringDataDAO<E extends Serializable, P extends Serial
      * @see #exists(Serializable)
      */
     public E update(E entity) {
-        //TODO: ver uma forma de manter a validação... ... ...
-        //if(!exists(entity)) throw new IllegalArgumentException("A valid entity with this ID does not exists");
+        if(!exists(entity)) throw new IllegalArgumentException("A valid entity with this ID does not exists");
         return persist(entity);
     }
 

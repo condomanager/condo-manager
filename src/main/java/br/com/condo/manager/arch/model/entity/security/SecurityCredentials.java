@@ -28,19 +28,23 @@ public class SecurityCredentials implements Serializable {
     private String password;
 
     @Column(name = "enabled")
-    private boolean enabled;
+    private boolean enabled = false;
 
     @Column(name = "locked")
-    private boolean locked;
+    private boolean locked = false;
 
     @Column(name = "expired")
-    private boolean expired;
+    private boolean expired = false;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "security_credentials_profiles",
-            joinColumns = @JoinColumn(name = "fk_security_credentials", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "fk_security_profile", referencedColumnName = "id"))
+            joinColumns = @JoinColumn(name = "security_credentials_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "security_profile_id", referencedColumnName = "id"))
     @Fetch(FetchMode.SUBSELECT)
     private Collection<SecurityProfile> securityProfiles;
 
+    public SecurityCredentials(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 }

@@ -22,7 +22,7 @@ public class EndpointAudit implements Serializable {
     @Column(name="date")
     private Date date;
 
-    @Column(name="fk_user")
+    @Column(name="user_id")
     private Long userId;
 
     @Column(name="action")
@@ -44,6 +44,6 @@ public class EndpointAudit implements Serializable {
 
     @Override
     public String toString() {
-        return "EndpointAudit: \"" + action + "\" by User of ID " + userId + " at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date) + " in " + executionTime + "ms [" + payload + "]";
+        return "EndpointAudit: \"" + action + "\" by SecurityCredentials of ID " + userId + " at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date) + " in " + executionTime + "ms [" + payload + "]";
     }
 }
