@@ -47,11 +47,16 @@ public class ProfileController extends BaseEndpoint<Profile, Long> {
         return requestData;
     }
 
-    //@PreAuthorize("hasRole('DO_NOTHING')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = {"/my_profile", "/my_profile/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Profile> getMyProfile() {
         SecurityCredentials auth = securityUtils.authenticatedCredentials();
         return retrieve(auth.getId());
     }
 
+    @PutMapping(value = {"/my_profile", "/my_profile/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Profile> updateMyProfile(@RequestBody Profile requestData) {
+        SecurityCredentials auth = securityUtils.authenticatedCredentials();
+        return update(auth.getId(), requestData);
+    }
 }
