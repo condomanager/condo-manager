@@ -7,7 +7,8 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "security_profile")
@@ -15,7 +16,7 @@ import java.util.Collection;
 @NoArgsConstructor
 public class SecurityProfile implements Serializable {
 
-    private static final long serialVersionUID = 1766412300783000411L;
+    private static final long serialversionuid = 1766412300783000411l;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +30,23 @@ public class SecurityProfile implements Serializable {
             joinColumns = @JoinColumn(name = "security_profile_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "security_privilege_id", referencedColumnName = "id"))
     @Fetch(FetchMode.SUBSELECT)
-    private Collection<SecurityPrivilege> securityPrivileges;
+    private Set<SecurityPrivilege> securityPrivileges;
 
-    public SecurityProfile(String name, Collection<SecurityPrivilege> securityPrivileges) {
+    public SecurityProfile(String name, Set<SecurityPrivilege> securityPrivileges) {
         this.name = name;
         this.securityPrivileges = securityPrivileges;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SecurityProfile that = (SecurityProfile) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

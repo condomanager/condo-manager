@@ -18,6 +18,14 @@ import java.util.Map;
 @RequestMapping("profiles")
 public class ProfileController extends BaseEndpoint<Profile, Long> {
 
+    private void validateUsername(Profile profile) {
+        if(profile.getCpf() == null || profile.getCpf().trim().isEmpty())
+            throw new BadRequestException("Invalid credentials: CPF is required");
+
+        if(!((ProfileDAO) dao).checkAvailability(profile.getCpf()))
+            throw new BadRequestException("Invalid credentials: a profile with this CPF is already registered");
+    }
+
     private void associateProfileToPhones(Profile profile) {
         if(profile.getPhones() != null && !profile.getPhones().isEmpty())
             profile.getPhones().stream().forEach(phone -> phone.setProfile(profile));
@@ -25,21 +33,19 @@ public class ProfileController extends BaseEndpoint<Profile, Long> {
 
     @Override
     protected Profile validateRequestDataForCreate(Profile requestData) {
-        if(requestData.getUsername() == null || requestData.getUsername().trim().isEmpty())
-            throw new BadRequestException("Invalid credentials: an username is required");
-
         if(requestData.getPassword() == null || requestData.getPassword().trim().isEmpty())
             throw new BadRequestException("Invalid credentials: a password is required");
 
-        if(!((ProfileDAO) dao).checkAvailability(requestData.getUsername()))
-            throw new BadRequestException("Invalid credentials: username is already in use");
-
+        validateUsername(requestData);
         associateProfileToPhones(requestData);
         return requestData;
     }
 
     @Override
     protected Profile validateRequestDataForUpdate(Profile requestData, Profile currentData) {
+        if (!requestData.getCpf().equals(currentData.getCpf()))
+            validateUsername(requestData);
+
         associateProfileToPhones(requestData);
         return requestData;
     }

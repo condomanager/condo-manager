@@ -7,7 +7,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Set;
 
 @Entity
 @Table(name = "security_credentials")
@@ -41,7 +41,7 @@ public class SecurityCredentials implements Serializable {
             joinColumns = @JoinColumn(name = "security_credentials_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "security_profile_id", referencedColumnName = "id"))
     @Fetch(FetchMode.SUBSELECT)
-    private Collection<SecurityProfile> securityProfiles;
+    private Set<SecurityProfile> securityProfiles;
 
     public SecurityCredentials(Long id, String username, String password) {
         this.id = id;

@@ -7,7 +7,6 @@ import br.com.condo.manager.arch.model.entity.security.SecurityProfile;
 import br.com.condo.manager.arch.service.BaseSpringDataDAO;
 import br.com.condo.manager.arch.service.security.SecurityPrivilegeDAO;
 import br.com.condo.manager.arch.service.security.SecurityProfileDAO;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,20 +44,14 @@ public class SystemDataStarter implements ApplicationListener<ContextRefreshedEv
         SecurityPrivilege MANAGE_WHITE_LIST = securityPrivilegeDAO.updateOrCreateIfNotExists("MANAGE_WHITE_LIST");
 
         LOGGER.info("Checking and creating security profiles");
-        SecurityProfile ADMIN = securityProfileDAO.updateOrCreateIfNotExists("ADMIN", Lists.newArrayList(
-                MANAGE_PROFILES, MANAGE_RESIDENCE_GROUPS, MANAGE_RESIDENCES, MANAGE_VISITS, MANAGE_WHITE_LIST
-        ));
-        SecurityProfile CONCIERGE = securityProfileDAO.updateOrCreateIfNotExists("CONCIERGE", Lists.newArrayList(
-                MANAGE_PROFILES, MANAGE_RESIDENCE_GROUPS, MANAGE_RESIDENCES, MANAGE_VISITS
-        ));
-        SecurityProfile DWELLER = securityProfileDAO.updateOrCreateIfNotExists("DWELLER", Lists.newArrayList(
-                MANAGE_WHITE_LIST
-        ));
+        securityProfileDAO.updateOrCreateIfNotExists("ADMIN", Sets.newHashSet(securityPrivilegeDAO.findAll()));
+        securityProfileDAO.updateOrCreateIfNotExists("CONCIERGE", Sets.newHashSet(MANAGE_RESIDENCES, MANAGE_PROFILES, MANAGE_VISITS));
+        securityProfileDAO.updateOrCreateIfNotExists("DWELLER", Sets.newHashSet(MANAGE_WHITE_LIST));
 
         LOGGER.info("Checking and creating system users");
-        Profile admin = profileDAO.createIfNotExists(new Profile("System Admin", "admin", "admin", Sets.newHashSet("ADMIN")));
-        Profile concierge = profileDAO.createIfNotExists(new Profile("Portaria", "portaria", "portaria", Sets.newHashSet("CONCIERGE")));
-        Profile dweller = profileDAO.createIfNotExists(new Profile("Morador", "morador", "morador", Sets.newHashSet("DWELLER")));
+        profileDAO.createIfNotExists(new Profile("System Admin", "00000000000", "admin", Sets.newHashSet("ADMIN")));
+        profileDAO.createIfNotExists(new Profile("Portaria", "11111111111", "portaria", Sets.newHashSet("CONCIERGE")));
+        profileDAO.createIfNotExists(new Profile("Morador", "22222222222", "morador", Sets.newHashSet("DWELLER")));
 
         alreadySetup = true;
     }

@@ -36,11 +36,8 @@ public class Profile implements Serializable {
     private String email;
 
     @OneToMany(mappedBy = "profile", fetch = FetchType.EAGER , cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(FetchMode.JOIN)
+    @Fetch(FetchMode.SUBSELECT)
     private List<Phone> phones;
-
-    @Transient
-    private String username;
 
     @Transient
     private String password;
@@ -48,9 +45,9 @@ public class Profile implements Serializable {
     @Transient
     private Set<String> securityProfiles;
 
-    public Profile(String name, String username, String password, Set<String> securityProfiles) {
+    public Profile(String name, String cpf, String password, Set<String> securityProfiles) {
         this.name = name;
-        this.username = username;
+        this.cpf = cpf;
         this.password = password;
         this.securityProfiles = securityProfiles;
     }

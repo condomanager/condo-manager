@@ -5,7 +5,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "security_privilege")
@@ -23,9 +24,22 @@ public class SecurityPrivilege implements Serializable {
     private String name;
 
     @ManyToMany(mappedBy = "securityPrivileges")
-    private Collection<SecurityProfile> securityProfiles;
+    private Set<SecurityProfile> securityProfiles;
 
     public SecurityPrivilege(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SecurityPrivilege that = (SecurityPrivilege) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

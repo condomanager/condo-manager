@@ -21,10 +21,34 @@ public class SecurityCredentialsDAO extends BaseSpringDataDAO<SecurityCredential
     private String securitySalt;
 
     @Override
-    public SecurityCredentials create(SecurityCredentials entity) {
-        String encryptedPassword = encryptPassword(entity.getPassword());
-        entity.setPassword(encryptedPassword);
-        return super.create(entity);
+    public SecurityCredentials persist(SecurityCredentials entity) {
+        if (!isEncryptedPassword(entity.getPassword())) {
+            String encryptedPassword = encryptPassword(entity.getPassword());
+            entity.setPassword(encryptedPassword);
+        }
+        return super.persist(entity);
+    }
+
+    /**
+     * <p>Informa se um determinado password contém as carcterísticas de um valor criptografado.</p>
+     *
+     * @param password
+     * @return <code>true</code> caso considere-se que já está criptografado, <code>false</code> do contrário
+     */
+    private boolean isEncryptedPassword(String password) {
+        //EXEMPLO: 9e6b6e2d-539a-303a-bebb-6f90918850ac
+        if (password.contains("-")) {
+            String[] passwordBits = password.split("-");
+            if (passwordBits.length == 5 &&
+                passwordBits[0].length() == 8 &&
+                passwordBits[1].length() == 4 &&
+                passwordBits[2].length() == 4 &&
+                passwordBits[3].length() == 4 &&
+                passwordBits[4].length() == 12
+            )
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -35,22 +59,6 @@ public class SecurityCredentialsDAO extends BaseSpringDataDAO<SecurityCredential
      */
     private String encryptPassword(String originalPassword) {
         //FIXME: implementar uma forma de encriptação mais adequada
-        /*
-        SecureRandom random = new SecureRandom();
-        byte[] salt = securitySalt.getBytes(StandardCharsets.UTF_8);
-        random.nextBytes(salt);
-
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("SHA-512");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        md.update(salt);
-
-        byte[] hashedPassword = md.digest(originalPassword.getBytes(StandardCharsets.UTF_8));
-        return new String(hashedPassword);
-        */
         String seed = originalPassword + "_" + this.securitySalt;
         return UUID.nameUUIDFromBytes(seed.getBytes()).toString();
     }

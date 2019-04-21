@@ -8,19 +8,20 @@ import br.com.condo.manager.arch.service.util.SearchSpecification;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class SecurityProfileDAO extends BaseSpringDataDAO<SecurityProfile, Long> {
 
-    public SecurityProfile updateOrCreateIfNotExists(String name, Collection<SecurityPrivilege> securityPrivileges) {
+    public SecurityProfile updateOrCreateIfNotExists(String name, Set<SecurityPrivilege> securityPrivileges) {
         List<SearchParameter> params = Lists.newArrayList(new SearchParameter("name", SearchParameter.Operator.EQUAL, name));
         Optional<SecurityProfile> securityProfile = repository.findOne(new SearchSpecification<>(params));
 
         if(securityProfile.isPresent()) {
             SecurityProfile profile = securityProfile.get();
+            profile.getSecurityPrivileges().clear();
             profile.getSecurityPrivileges().addAll(securityPrivileges);
             return update(profile);
         } else {

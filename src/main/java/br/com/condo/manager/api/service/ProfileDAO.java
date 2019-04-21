@@ -7,11 +7,12 @@ import br.com.condo.manager.arch.service.BaseSpringDataDAO;
 import br.com.condo.manager.arch.service.security.SecurityCredentialsDAO;
 import br.com.condo.manager.arch.service.security.SecurityProfileDAO;
 import br.com.condo.manager.arch.service.util.SearchParameter;
+import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ProfileDAO extends BaseSpringDataDAO<Profile, Long> {
@@ -26,26 +27,50 @@ public class ProfileDAO extends BaseSpringDataDAO<Profile, Long> {
         return securityCredentialsDAO.checkAvailability(username);
     }
 
+    protected Set<SecurityProfile> getSecurityProfilesByNames(Collection<String> names) {
+        SearchParameter securityProfilesByNames = new SearchParameter("name", SearchParameter.Operator.IN, names);
+        Collection<SecurityProfile> securityProfiles = securityProfileDAO.find(securityProfilesByNames);
+        return Sets.newHashSet(securityProfiles);
+    }
+
     @Override
     public Profile create(Profile entity) {
-        SearchParameter securityProfilesByNames = new SearchParameter("name", SearchParameter.Operator.IN, entity.getSecurityProfiles());
-        Collection<SecurityProfile> securityProfiles = securityProfileDAO.find(securityProfilesByNames);
-        SecurityCredentials securityCredentials = createSecurityCredentials(entity.getUsername(), entity.getPassword(), securityProfiles);
-
+        SecurityCredentials securityCredentials = createSecurityCredentials(entity.getCpf(), entity.getPassword(), getSecurityProfilesByNames(entity.getSecurityProfiles()));
         entity.setId(securityCredentials.getId());
         return super.create(entity);
     }
 
-    public SecurityCredentials createSecurityCredentials(String username, String password, Collection<SecurityProfile> securityProfiles) {
+    @Override
+    public Profile update(Profile entity) {
+        SecurityCredentials securityCredentials = updateSecurityCredentials(entity.getId(), entity.getCpf(), entity.getPassword(), getSecurityProfilesByNames(entity.getSecurityProfiles()));
+        return super.update(entity);
+    }
+
+    public SecurityCredentials createSecurityCredentials(String username, String password, Set<SecurityProfile> securityProfiles) {
         SecurityCredentials securityCredentials = new SecurityCredentials(username, password);
         securityCredentials.setEnabled(true);
         securityCredentials.setSecurityProfiles(securityProfiles);
         return securityCredentialsDAO.create(securityCredentials);
     }
 
+    public SecurityCredentials updateSecurityCredentials(Long id, String username, String password, Set<SecurityProfile> securityProfiles) {
+        SecurityCredentials securityCredentials = securityCredentialsDAO.retrieve(id).get();
+
+        boolean shouldChangeUsername = !username.equals(securityCredentials.getUsername());
+        boolean shouldChangePassword = password != null && !password.trim().isEmpty();
+        if (shouldChangeUsername || shouldChangePassword) {
+            if (shouldChangeUsername)
+                securityCredentials.setUsername(username);
+            if (shouldChangePassword)
+                securityCredentials.setPassword(password);
+            return securityCredentialsDAO.update(securityCredentials);
+        }
+
+        return securityCredentials;
+    }
+
     public Profile createIfNotExists(Profile profile) {
-        Optional<SecurityCredentials> securityCredentials = securityCredentialsDAO.retrieve(profile.getUsername());
-        if (!securityCredentials.isPresent())
+        if (checkAvailability(profile.getCpf()))
             return create(profile);
 
         return null;
