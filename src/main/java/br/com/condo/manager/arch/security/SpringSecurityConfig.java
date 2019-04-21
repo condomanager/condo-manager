@@ -24,15 +24,18 @@ import java.util.Objects;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(
+    protected static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(
         new AntPathRequestMatcher("/login"),
         new AntPathRequestMatcher("*/login"),
-        new AntPathRequestMatcher("**/login**")
+        new AntPathRequestMatcher("**/login**"),
+        new AntPathRequestMatcher("/error"),
+        new AntPathRequestMatcher("*/error"),
+        new AntPathRequestMatcher("**/error**")
     );
-    private static final RequestMatcher PROTECTED_URLS = new NegatedRequestMatcher(PUBLIC_URLS);
+    protected static final RequestMatcher PROTECTED_URLS = new NegatedRequestMatcher(PUBLIC_URLS);
 
     TokenAuthenticationProvider provider;
 

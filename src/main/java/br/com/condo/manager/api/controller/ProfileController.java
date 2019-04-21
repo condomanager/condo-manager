@@ -1,41 +1,38 @@
 package br.com.condo.manager.api.controller;
 
-import br.com.condo.manager.api.model.entity.Phone;
 import br.com.condo.manager.api.model.entity.Profile;
 import br.com.condo.manager.api.service.ProfileDAO;
 import br.com.condo.manager.arch.controller.BaseEndpoint;
 import br.com.condo.manager.arch.controller.exception.BadRequestException;
-import br.com.condo.manager.arch.controller.exception.ForbiddenException;
 import br.com.condo.manager.arch.model.entity.security.SecurityCredentials;
-import br.com.condo.manager.arch.service.security.SecurityCredentialsDAO;
-import br.com.condo.manager.arch.service.util.SearchParameter;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.collect.Sets;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
+import java.util.Map;
 
 @RestController
 @RequestMapping("profiles")
 public class ProfileController extends BaseEndpoint<Profile, Long> {
-    private ProfileDAO profileDAO = ((ProfileDAO) dao);
 
     private void associateProfileToPhones(Profile profile) {
-        if(profile.getPhones() != null && !profile.getPhones().isEmpty()) {
-            for (Phone phone : profile.getPhones()) {
-                phone.setProfile(profile);
-            }
-        }
+        if(profile.getPhones() != null && !profile.getPhones().isEmpty())
+            profile.getPhones().stream().forEach(phone -> phone.setProfile(profile));
     }
 
     @Override
     protected Profile validateRequestDataForCreate(Profile requestData) {
-        ProfileDAO profileDAO = (ProfileDAO) dao;
+        if(requestData.getUsername() == null || requestData.getUsername().trim().isEmpty())
+            throw new BadRequestException("Invalid credentials: an username is required");
 
-        if(!profileDAO.checkAvailability(requestData.getUsername()))
+        if(requestData.getPassword() == null || requestData.getPassword().trim().isEmpty())
+            throw new BadRequestException("Invalid credentials: a password is required");
+
+        if(!((ProfileDAO) dao).checkAvailability(requestData.getUsername()))
             throw new BadRequestException("Invalid credentials: username is already in use");
-
-        SecurityCredentials securityCredentials = profileDAO.createSecurityCredentials(requestData.getUsername(), requestData.getPassword());
-        requestData.setId(securityCredentials.getId());
 
         associateProfileToPhones(requestData);
         return requestData;
@@ -47,16 +44,83 @@ public class ProfileController extends BaseEndpoint<Profile, Long> {
         return requestData;
     }
 
-    //@PreAuthorize("hasRole('ADMIN')")
+
+    // =================================================================================================================
+    // OVERRIDES
+    // =================================================================================================================
+
+
+    @PreAuthorize("hasAuthority('MANAGE_PROFILES')")
+    @GetMapping(value = {"", "/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Collection<Profile>> find(@RequestParam Map<String,String> requestParams) {
+        return super.find(requestParams);
+    }
+
+    @PreAuthorize("hasAuthority('MANAGE_PROFILES')")
+    @GetMapping(value = {"/count", "/count/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Long> count(@RequestParam Map<String,String> requestParams) {
+        return super.count(requestParams);
+    }
+
+    @PostMapping(value = {"", "/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Profile> create(@RequestBody Profile requestData) {
+        requestData.setSecurityProfiles(Sets.newHashSet("DWELLER"));
+        return super.create(requestData);
+    }
+
+    @PreAuthorize("hasAuthority('MANAGE_PROFILES')")
+    @GetMapping(value = {"/{id}/exists", "/{id}/exists/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity exists(@PathVariable Long id) {
+        return super.exists(id);
+    }
+
+    @PreAuthorize("hasAuthority('MANAGE_PROFILES')")
+    @GetMapping(value = {"/{id}", "/{id}/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Profile> retrieve(@PathVariable Long id) {
+        return super.retrieve(id);
+    }
+
+    @PreAuthorize("hasAuthority('MANAGE_PROFILES')")
+    @PutMapping(value = {"/{id}", "/{id}/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Profile> update(@PathVariable Long id, @RequestBody Profile requestData) {
+        return super.update(id, requestData);
+    }
+
+    @PreAuthorize("hasAuthority('MANAGE_PROFILES')")
+    @DeleteMapping(value = {"/{id}", "/{id}/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity delete(@PathVariable Long id) {
+        return super.delete(id);
+    }
+
+
+    // =================================================================================================================
+    // ENDPOINTS
+    // =================================================================================================================
+
+
     @GetMapping(value = {"/my_profile", "/my_profile/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Profile> getMyProfile() {
+    public ResponseEntity<Profile> retrieveMyProfile() {
         SecurityCredentials auth = securityUtils.authenticatedCredentials();
-        return retrieve(auth.getId());
+        return super.retrieve(auth.getId());
     }
 
     @PutMapping(value = {"/my_profile", "/my_profile/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Profile> updateMyProfile(@RequestBody Profile requestData) {
         SecurityCredentials auth = securityUtils.authenticatedCredentials();
-        return update(auth.getId(), requestData);
+        return super.update(auth.getId(), requestData);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = {"/admin", "/admin/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Profile> createAdmin(@RequestBody Profile requestData) {
+        requestData.setSecurityProfiles(Sets.newHashSet("ADMIN"));
+        return super.create(requestData);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = {"/concierge", "/concierge/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Profile> createConcierge(@RequestBody Profile requestData) {
+        requestData.setSecurityProfiles(Sets.newHashSet("CONCIERGE"));
+        return super.create(requestData);
     }
 }

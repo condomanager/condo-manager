@@ -1,6 +1,7 @@
 package br.com.condo.manager.arch.controller;
 
 import br.com.condo.manager.arch.controller.exception.BadRequestException;
+import br.com.condo.manager.arch.controller.exception.ForbiddenException;
 import br.com.condo.manager.arch.controller.exception.NotFoundException;
 import br.com.condo.manager.arch.security.SecurityUtils;
 import br.com.condo.manager.arch.service.BaseSpringDataDAO;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.xml.bind.DatatypeConverter;
@@ -59,8 +61,8 @@ public abstract class BaseEndpoint<E extends Serializable, P extends Serializabl
     }
 
     @PostMapping(value = {"", "/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<E> create(@RequestBody E data) {
-        E dataToCreate = validateRequestDataForCreate(data);
+    public ResponseEntity<E> create(@RequestBody E requestData) {
+        E dataToCreate = validateRequestDataForCreate(requestData);
         E result = dao.create(dataToCreate);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }

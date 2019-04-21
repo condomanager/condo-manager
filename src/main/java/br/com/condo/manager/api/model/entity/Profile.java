@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "profile")
@@ -44,5 +45,14 @@ public class Profile implements Serializable {
     @Transient
     private String password;
 
+    @Transient
+    private Set<String> securityProfiles;
+
+    public Profile(String name, String username, String password, Set<String> securityProfiles) {
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.securityProfiles = securityProfiles;
+    }
 
 }

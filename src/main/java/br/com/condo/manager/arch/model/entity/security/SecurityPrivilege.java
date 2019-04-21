@@ -25,4 +25,7 @@ public class SecurityPrivilege implements Serializable {
     @ManyToMany(mappedBy = "securityPrivileges")
     private Collection<SecurityProfile> securityProfiles;
 
+    public SecurityPrivilege(String name) {
+        this.name = name;
+    }
 }

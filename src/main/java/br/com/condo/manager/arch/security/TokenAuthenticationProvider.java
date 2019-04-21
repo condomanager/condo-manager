@@ -1,5 +1,6 @@
 package br.com.condo.manager.arch.security;
 
+import br.com.condo.manager.arch.model.entity.security.AnonymousAuthentication;
 import br.com.condo.manager.arch.model.entity.security.SecurityAuthentication;
 import br.com.condo.manager.arch.model.entity.security.SecurityPrivilege;
 import br.com.condo.manager.arch.model.entity.security.SecurityProfile;
@@ -31,7 +32,7 @@ public class TokenAuthenticationProvider extends AbstractUserDetailsAuthenticati
     protected UserDetails retrieveUser(final String username, final UsernamePasswordAuthenticationToken authentication) {
         final String token = String.valueOf(authentication.getCredentials());
 
-        SecurityAuthentication auth = securityAuthenticationDAO.retrieve(token).orElseThrow(() -> new UsernameNotFoundException("Invalid authorization token " + token));
+        SecurityAuthentication auth = (token == "anonymous") ? new AnonymousAuthentication() : securityAuthenticationDAO.retrieve(token).orElseThrow(() -> new UsernameNotFoundException("Invalid authorization token " + token));
 
         List<String> roles = auth.getSecurityCredentials().getSecurityProfiles().stream().map(SecurityProfile::getName).collect(Collectors.toList());
         List<String> authorities = auth.getSecurityCredentials().getSecurityProfiles().stream().flatMap(sp -> sp.getSecurityPrivileges().stream().map(SecurityPrivilege::getName)).collect(Collectors.toList());

@@ -43,8 +43,14 @@ public class SecurityCredentials implements Serializable {
     @Fetch(FetchMode.SUBSELECT)
     private Collection<SecurityProfile> securityProfiles;
 
-    public SecurityCredentials(String username, String password) {
+    public SecurityCredentials(Long id, String username, String password) {
+        this.id = id;
         this.username = username;
         this.password = password;
     }
+
+    public SecurityCredentials(String username, String password) {
+        this(null, username, password);
+    }
+
 }

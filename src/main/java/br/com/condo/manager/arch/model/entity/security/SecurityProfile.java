@@ -31,4 +31,8 @@ public class SecurityProfile implements Serializable {
     @Fetch(FetchMode.SUBSELECT)
     private Collection<SecurityPrivilege> securityPrivileges;
 
+    public SecurityProfile(String name, Collection<SecurityPrivilege> securityPrivileges) {
+        this.name = name;
+        this.securityPrivileges = securityPrivileges;
+    }
 }
