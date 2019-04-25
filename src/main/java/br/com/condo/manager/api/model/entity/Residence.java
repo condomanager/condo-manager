@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -33,5 +34,9 @@ public class Residence implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "residence")
     private Set<Profile> profiles;
+
+    @JsonIgnore
+    @OneToMany (mappedBy = "residence")
+    private List<Visit> visits;
 
 }

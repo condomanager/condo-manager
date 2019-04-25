@@ -104,13 +104,13 @@ public class ProfileController extends BaseEndpoint<Profile, Long> {
     // =================================================================================================================
 
 
-    @GetMapping(value = {"/my_profile", "/my_profile/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = {"/my-profile", "/my-profile/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Profile> retrieveMyProfile() {
         SecurityCredentials auth = securityUtils.authenticatedCredentials();
         return super.retrieve(auth.getId());
     }
 
-    @PutMapping(value = {"/my_profile", "/my_profile/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping(value = {"/my-profile", "/my-profile/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Profile> updateMyProfile(@RequestBody Profile requestData) {
         SecurityCredentials auth = securityUtils.authenticatedCredentials();
         return super.update(auth.getId(), requestData);

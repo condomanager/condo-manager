@@ -45,7 +45,7 @@ public class SystemDataStarter implements ApplicationListener<ContextRefreshedEv
 
         LOGGER.info("Checking and creating security profiles");
         securityProfileDAO.updateOrCreateIfNotExists("ADMIN", Sets.newHashSet(securityPrivilegeDAO.findAll()));
-        securityProfileDAO.updateOrCreateIfNotExists("CONCIERGE", Sets.newHashSet(MANAGE_PROFILES, MANAGE_VISITS));
+        securityProfileDAO.updateOrCreateIfNotExists("CONCIERGE", Sets.newHashSet(MANAGE_VISITS));
         securityProfileDAO.updateOrCreateIfNotExists("DWELLER", Sets.newHashSet(MANAGE_WHITE_LIST));
 
         LOGGER.info("Checking and creating system users");
