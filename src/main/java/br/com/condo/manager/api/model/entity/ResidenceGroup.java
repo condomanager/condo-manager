@@ -26,11 +26,8 @@ public class ResidenceGroup implements Serializable {
     @Column
     private String description;
 
-    @Column
-    private Integer doors;
-
     @JsonIgnore
-    @OneToMany(mappedBy = "group", orphanRemoval = true)
+    @OneToMany(mappedBy = "group")
     private List<Residence> residences;
 
 }

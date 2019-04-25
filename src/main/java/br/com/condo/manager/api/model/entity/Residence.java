@@ -1,10 +1,12 @@
 package br.com.condo.manager.api.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 @Entity
 @Table(name = "residence")
@@ -19,12 +21,17 @@ public class Residence implements Serializable {
     private Long id;
 
     @Column
-    private String number;
+    private String name;
 
     @Column
-    private String obs;
+    private String description;
 
+    @JsonIgnore
     @ManyToOne
     private ResidenceGroup group;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "residence")
+    private Set<Profile> profiles;
 
 }

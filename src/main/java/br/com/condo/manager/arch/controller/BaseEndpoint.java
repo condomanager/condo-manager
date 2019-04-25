@@ -63,6 +63,7 @@ public abstract class BaseEndpoint<E extends Serializable, P extends Serializabl
     @PostMapping(value = {"", "/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<E> create(@RequestBody E requestData) {
         E dataToCreate = validateRequestDataForCreate(requestData);
+        updateId(dataToCreate, null);
         E result = dao.create(dataToCreate);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }

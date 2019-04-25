@@ -39,6 +39,9 @@ public class Profile implements Serializable {
     @Fetch(FetchMode.SUBSELECT)
     private List<Phone> phones;
 
+    @ManyToOne
+    private Residence residence;
+
     @Transient
     private String password;
 
