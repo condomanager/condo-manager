@@ -39,4 +39,8 @@ public class Residence implements Serializable {
     @OneToMany (mappedBy = "residence")
     private List<Visit> visits;
 
+    @JsonIgnore
+    @OneToMany (mappedBy = "residence")
+    private List<WhiteList> whiteLists;
+
 }
