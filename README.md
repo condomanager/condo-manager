@@ -9,5 +9,6 @@ For now, it's possible to:
 * Create a new user profile
 * Authenticate as an existent user
 * Once authenticated, update it's own user profile
+* Create and manager a visit
 
 Check the wiki for more details about how it all works.
