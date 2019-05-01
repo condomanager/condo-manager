@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -29,7 +26,9 @@ public class AuthenticationController {
     protected SecurityUtils securityUtils;
 
     @PostMapping(value = {"/login"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Map<String, String>> login(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> requestCredentials) {
+        String username = requestCredentials.get("username");
+        String password = requestCredentials.get("password");
         if(username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty())
             throw new BadRequestException("Invalid credentials: both username and password must not be empty");
 
@@ -40,7 +39,7 @@ public class AuthenticationController {
         if(credentials.isLocked())
             throw new BadRequestException("Invalid credentials: account is locked and can not be used");
         if(credentials.isExpired())
-            throw new BadRequestException("Invalid credentials: account is expired and can not be used");
+            throw new BadRequestException("Invalid credentials: account has expired and can not be used");
 
         SecurityAuthentication securityAuthentication = authenticationDAO.retrieve(credentials).orElseGet(() -> authenticationDAO.create(new SecurityAuthentication(credentials)));
 
