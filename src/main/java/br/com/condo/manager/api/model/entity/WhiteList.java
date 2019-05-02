@@ -8,12 +8,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "visit")
+@Table(name = "whiteList")
 @Data
 @NoArgsConstructor
-public class Visit implements Serializable {
-
-    private static final long serialVersionUID = 1359135403590580087L;
+public class WhiteList implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,19 +21,7 @@ public class Visit implements Serializable {
     private String name;
 
     @Column
-    private String licensePlate;
-
-    @Column
-    private String document;
-
-    @Column
     private Date authorizeDate;
-
-    @Column
-    private Date denyDate;
-
-    @Column
-    private Date departureDate;
 
     @Column
     private Date cancelDate;
