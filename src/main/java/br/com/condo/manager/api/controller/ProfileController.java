@@ -1,22 +1,30 @@
 package br.com.condo.manager.api.controller;
 
 import br.com.condo.manager.api.model.entity.Profile;
+import br.com.condo.manager.api.model.entity.Residence;
 import br.com.condo.manager.api.service.ProfileDAO;
+import br.com.condo.manager.api.service.ResidenceDAO;
 import br.com.condo.manager.arch.controller.BaseEndpoint;
 import br.com.condo.manager.arch.controller.exception.BadRequestException;
 import br.com.condo.manager.arch.model.entity.security.SecurityCredentials;
 import com.google.common.collect.Sets;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("profiles")
 public class ProfileController extends BaseEndpoint<Profile, Long> {
+
+    @Autowired
+    ResidenceDAO residenceDAO;
 
     private void validateUsername(Profile profile) {
         if(profile.getCpf() == null || profile.getCpf().trim().isEmpty())
@@ -26,8 +34,16 @@ public class ProfileController extends BaseEndpoint<Profile, Long> {
             throw new BadRequestException("Invalid credentials: a profile with this CPF is already registered");
     }
 
-    private void associateProfileToPhones(Profile profile) {
-        if(profile.getPhones() != null && !profile.getPhones().isEmpty())
+    private void validateRequestDataForPersistence(Profile profile) {
+        if(profile.getResidence() != null) {
+            Optional<Residence> residence =  residenceDAO.retrieve(profile.getResidence().getId());
+            if(!residence.isPresent())
+                throw new BadRequestException("Invalid data: Residence of ID " + profile.getResidence().getId() + " does not exists");
+        }
+
+        if(profile.getPhones() == null)
+            profile.setPhones(new ArrayList<>());
+        if(!profile.getPhones().isEmpty())
             profile.getPhones().stream().forEach(phone -> phone.setProfile(profile));
     }
 
@@ -37,7 +53,7 @@ public class ProfileController extends BaseEndpoint<Profile, Long> {
             throw new BadRequestException("Invalid credentials: a password is required");
 
         validateUsername(requestData);
-        associateProfileToPhones(requestData);
+        validateRequestDataForPersistence(requestData);
         return requestData;
     }
 
@@ -46,7 +62,7 @@ public class ProfileController extends BaseEndpoint<Profile, Long> {
         if (!requestData.getCpf().equals(currentData.getCpf()))
             validateUsername(requestData);
 
-        associateProfileToPhones(requestData);
+        validateRequestDataForPersistence(requestData);
         return requestData;
     }
 

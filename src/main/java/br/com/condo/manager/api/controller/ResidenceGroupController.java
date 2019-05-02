@@ -3,11 +3,9 @@ package br.com.condo.manager.api.controller;
 import br.com.condo.manager.api.model.entity.Residence;
 import br.com.condo.manager.api.model.entity.ResidenceGroup;
 import br.com.condo.manager.api.service.ResidenceDAO;
-import br.com.condo.manager.api.service.ResidenceGroupDAO;
 import br.com.condo.manager.arch.controller.BaseEndpoint;
 import br.com.condo.manager.arch.controller.exception.BadRequestException;
 import br.com.condo.manager.arch.controller.exception.NotFoundException;
-import br.com.condo.manager.arch.model.entity.security.SecurityCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,7 +24,7 @@ public class ResidenceGroupController extends BaseEndpoint<ResidenceGroup, Long>
     @Autowired
     private ResidenceDAO residenceDAO;
 
-    private Residence validateAndRetrieveResidence(Long groupId, Long id) {
+    private Residence retrieveResidenceResource(Long groupId, Long id) {
         ResidenceGroup residenceGroup = retrieveResource(groupId);
 
         Optional<Residence> retrieveResult = residenceDAO.retrieve(id);
@@ -39,31 +36,25 @@ public class ResidenceGroupController extends BaseEndpoint<ResidenceGroup, Long>
         return residence;
     }
 
-    private void validateResidence(Residence residence) {
-        if (residence.getName() == null || residence.getName().isEmpty())
+    private void validateResidenceRequestData(Residence requestData) {
+        if (requestData.getName() == null || requestData.getName().isEmpty())
             throw new BadRequestException("Invalid data: residence name is required");
     }
 
-    private void validateResidenceGroup(ResidenceGroup residenceGroup) {
-        if (residenceGroup.getName() == null || residenceGroup.getName().isEmpty())
+    private void validateResidenceGroupRequestData(ResidenceGroup requestData) {
+        if (requestData.getName() == null || requestData.getName().isEmpty())
             throw new BadRequestException("Invalid data: residence group name is required");
     }
 
     @Override
     protected ResidenceGroup validateRequestDataForCreate(ResidenceGroup requestData) {
-        validateResidenceGroup(requestData);
+        validateResidenceGroupRequestData(requestData);
         return requestData;
     }
 
     @Override
     protected ResidenceGroup validateRequestDataForUpdate(ResidenceGroup requestData, ResidenceGroup currentData) {
-        currentData.getResidences().clear();
-        if (requestData.getResidences() != null) {
-            currentData.getResidences().addAll(requestData.getResidences());
-            requestData.setResidences(currentData.getResidences());
-        }
-
-        validateResidenceGroup(requestData);
+        validateResidenceGroupRequestData(requestData);
         return requestData;
     }
 
@@ -122,32 +113,33 @@ public class ResidenceGroupController extends BaseEndpoint<ResidenceGroup, Long>
     @PostMapping(value = {"{groupId}/residences", "{groupId}/residences/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Residence> createResidence(@PathVariable Long groupId, @RequestBody Residence requestData) {
         ResidenceGroup residenceGroup = retrieveResource(groupId);
+        validateResidenceRequestData(requestData);
         requestData.setGroup(residenceGroup);
-        validateResidence(requestData);
         Residence residence = residenceDAO.create(requestData);
-        return new ResponseEntity<>(residence, HttpStatus.OK);
-    }
-
-    @PreAuthorize("hasAuthority('MANAGE_RESIDENCES')")
-    @PutMapping(value = {"{groupId}/residences/{id}", "{groupId}/residences/{id}/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Residence> updateResidence(@PathVariable Long groupId, @PathVariable Long id, @RequestBody Residence requestData) {
-        Residence retrieveResult = validateAndRetrieveResidence(groupId, id);
-        validateResidence(requestData);
-        requestData.setId(retrieveResult.getId());
-        Residence residence = residenceDAO.update(requestData);
         return new ResponseEntity<>(residence, HttpStatus.OK);
     }
 
     @GetMapping(value = {"{groupId}/residences/{id}", "{groupId}/residences/{id}/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Residence> retrieveResidence(@PathVariable Long groupId, @PathVariable Long id) {
-        Residence retrieveResult = validateAndRetrieveResidence(groupId, id);
+        Residence retrieveResult = retrieveResidenceResource(groupId, id);
         return new ResponseEntity<>(retrieveResult, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('MANAGE_RESIDENCES')")
+    @PutMapping(value = {"{groupId}/residences/{id}", "{groupId}/residences/{id}/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Residence> updateResidence(@PathVariable Long groupId, @PathVariable Long id, @RequestBody Residence requestData) {
+        Residence retrieveResult = retrieveResidenceResource(groupId, id);
+        validateResidenceRequestData(requestData);
+        requestData.setId(retrieveResult.getId());
+        requestData.setGroup(retrieveResult.getGroup());
+        Residence residence = residenceDAO.update(requestData);
+        return new ResponseEntity<>(residence, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('MANAGE_RESIDENCES')")
     @DeleteMapping(value = {"{groupId}/residences/{id}", "{groupId}/residences/{id}/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Residence> deleteResidence(@PathVariable Long groupId, @PathVariable Long id, @RequestBody Residence requestData) {
-        Residence retrieveResult = validateAndRetrieveResidence(groupId, id);
+        Residence retrieveResult = retrieveResidenceResource(groupId, id);
         residenceDAO.delete(retrieveResult);
         return new ResponseEntity(HttpStatus.OK);
     }
