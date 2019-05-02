@@ -46,4 +46,7 @@ public class Visit implements Serializable {
     @ManyToOne
     private Residence residence;
 
+    @ManyToOne
+    private Visitor visitor;
+
 }

@@ -41,7 +41,7 @@ public class SystemDataStarter implements ApplicationListener<ContextRefreshedEv
         SecurityPrivilege MANAGE_RESIDENCE_GROUPS = securityPrivilegeDAO.updateOrCreateIfNotExists("MANAGE_RESIDENCE_GROUPS");
         SecurityPrivilege MANAGE_RESIDENCES = securityPrivilegeDAO.updateOrCreateIfNotExists("MANAGE_RESIDENCES");
         SecurityPrivilege MANAGE_VISITS = securityPrivilegeDAO.updateOrCreateIfNotExists("MANAGE_VISITS");
-        SecurityPrivilege MANAGE_WHITE_LIST = securityPrivilegeDAO.updateOrCreateIfNotExists("MANAGE_WHITE_LIST");
+        SecurityPrivilege MANAGE_VISITORS = securityPrivilegeDAO.updateOrCreateIfNotExists("MANAGE_VISITORS");
 
         LOGGER.info("Checking and creating security profiles");
         securityProfileDAO.updateOrCreateIfNotExists("ADMIN", Sets.newHashSet(securityPrivilegeDAO.findAll()));
