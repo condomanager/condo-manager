@@ -34,16 +34,16 @@ public class VisitorDAO extends BaseSpringDataDAO<Visitor, Long> {
     }
 
     @Override
-    public Visitor create(Visitor entity) {
-        entity.setCreationDate(new Date());
-        entity.setDeleteDate(null);
-        return super.create(entity);
-    }
-
-    @Override
     protected Collection<SearchParameter> defaultSearchParameters() {
         List<SearchParameter> searchParameters = new ArrayList<>();
         searchParameters.add(new SearchParameter("deleteDate", SearchParameter.Operator.IS_NULL));
         return searchParameters;
+    }
+
+    @Override
+    public Visitor create(Visitor entity) {
+        entity.setCreationDate(new Date());
+        entity.setDeleteDate(null);
+        return super.create(entity);
     }
 }

@@ -1,17 +1,13 @@
 package br.com.condo.manager.api.controller;
 
 
-import br.com.condo.manager.api.model.entity.Profile;
 import br.com.condo.manager.api.model.entity.Residence;
-import br.com.condo.manager.api.model.entity.Visit;
 import br.com.condo.manager.api.model.entity.Visitor;
-import br.com.condo.manager.api.service.ProfileDAO;
 import br.com.condo.manager.api.service.ResidenceDAO;
-import br.com.condo.manager.arch.controller.BaseEndpoint;
 import br.com.condo.manager.arch.controller.exception.BadRequestException;
-import br.com.condo.manager.arch.controller.exception.ForbiddenException;
-import br.com.condo.manager.arch.model.entity.security.SecurityCredentials;
+import br.com.condo.manager.arch.controller.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,15 +23,15 @@ public class VisitorController extends ResidenceDependentEndpoint<Visitor, Long>
     @Autowired
     ResidenceDAO residenceDAO;
 
-    @Autowired
-    ProfileDAO profileDAO;
+    private Visitor validateAndRetrieveMyVisitor(Long id) {
+        Residence myResidence = retrieveMyResidence();
+        Visitor visitor = retrieveResource(id);
+        if(!visitor.getResidence().equals(myResidence))
+            throw new NotFoundException("A visitor of ID " + id + " was not found for your residence");
+        return visitor;
+    }
 
-    @Override
-    protected Visitor validateRequestDataForCreate(Visitor requestData) {
-        Optional<Residence> residence = residenceDAO.retrieve(requestData.getResidence().getId());
-        if(!residence.isPresent())
-            throw new BadRequestException("Invalid data: a Residence of ID " + requestData.getResidence().getId() + " was not found");
-
+    protected Visitor validateRequestDataForPersistence(Visitor requestData) {
         if(requestData.getName() == null || requestData.getName().trim().isEmpty())
             throw new BadRequestException("Invalid data: the name of the visitor must be informed");
 
@@ -43,10 +39,20 @@ public class VisitorController extends ResidenceDependentEndpoint<Visitor, Long>
     }
 
     @Override
+    protected Visitor validateRequestDataForCreate(Visitor requestData) {
+        Optional<Residence> residence = residenceDAO.retrieve(requestData.getResidence().getId());
+        if(!residence.isPresent())
+            throw new BadRequestException("Invalid data: a Residence of ID " + requestData.getResidence().getId() + " was not found");
+
+        validateRequestDataForPersistence(requestData);
+        return  requestData;
+    }
+
+    @Override
     protected Visitor validateRequestDataForUpdate(Visitor requestData, Visitor currentData) {
-        this.validateRequestDataForCreate(requestData);
-        requestData.setCreationDate(currentData.getCreationDate());
+        validateRequestDataForPersistence(requestData);
         requestData.setResidence(currentData.getResidence());
+        requestData.setCreationDate(currentData.getCreationDate());
         return requestData;
     }
 
@@ -125,23 +131,24 @@ public class VisitorController extends ResidenceDependentEndpoint<Visitor, Long>
         return super.create(requestData);
     }
 
+    @GetMapping(value = {"/my-visitors/{id}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Visitor> retrieveMyVisitor(@PathVariable Long id) {
+        Visitor retrieveResult = validateAndRetrieveMyVisitor(id);
+        return  new ResponseEntity<>(retrieveResult, HttpStatus.OK);
+    }
+
     @PutMapping(value = {"/my-visitors/{id}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Visitor> updateMyVisitor(@PathVariable Long id, @RequestBody Visitor requestData) {
-        Residence myResidence = retrieveMyResidence();
-        Visitor currentData = retrieveResource(id);
+        Visitor currentData = validateAndRetrieveMyVisitor(id);
         if(requestData.getAuthorizeDate() != null && currentData.getAuthorizeDate() != null && !requestData.getAuthorizeDate().equals(currentData.getAuthorizeDate()))
             requestData.setAuthorizeDate(currentData.getAuthorizeDate());
-        requestData.setResidence(myResidence);
         return super.update(id, requestData);
     }
 
     @DeleteMapping(value = {"/my-visitors/{id}", "/my-visitors/{id}/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity deleteMyVisitor(@PathVariable Long id) {
-        Residence myResidence = retrieveMyResidence();
-        Visitor visitor = retrieveResource(id);
-        if(myResidence.equals(visitor.getResidence())){
-            return super.delete(id);
-        } throw new ForbiddenException("You can't delete a visitor from another residence");
+        Visitor retrieveResult = validateAndRetrieveMyVisitor(id);
+        return super.delete(id);
     }
 
 }

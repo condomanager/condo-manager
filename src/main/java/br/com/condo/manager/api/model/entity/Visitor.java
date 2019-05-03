@@ -23,6 +23,9 @@ public class Visitor implements Serializable {
     private String name;
 
     @Column
+    private String document;
+
+    @Column
     private Date authorizeDate;
 
     @Column
