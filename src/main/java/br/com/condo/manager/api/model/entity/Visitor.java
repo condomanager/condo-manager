@@ -1,19 +1,19 @@
 package br.com.condo.manager.api.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Entity
-@Table(name = "visit")
+@Table(name = "visitor")
 @Data
 @NoArgsConstructor
-public class Visit implements Serializable {
-
-    private static final long serialVersionUID = 1359135403590580087L;
+public class Visitor implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,22 +23,16 @@ public class Visit implements Serializable {
     private String name;
 
     @Column
-    private String licensePlate;
-
-    @Column
     private String document;
 
     @Column
     private Date authorizeDate;
 
     @Column
-    private Date denyDate;
+    private Date deleteDate;
 
     @Column
-    private Date departureDate;
-
-    @Column
-    private Date cancelDate;
+    private Date creationDate;
 
     @Column
     private String observation;
@@ -46,7 +40,8 @@ public class Visit implements Serializable {
     @ManyToOne
     private Residence residence;
 
-    @ManyToOne
-    private Visitor visitor;
+    @JsonIgnore
+    @OneToMany(mappedBy = "visitor")
+    private List<Visit> visit;
 
 }

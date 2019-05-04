@@ -71,6 +71,7 @@ public class VisitController extends BaseEndpoint<Visit, Long> {
     @PreAuthorize("hasAuthority('MANAGE_VISITS')")
     @PostMapping(value = {"", "/"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Visit> create(@RequestBody Visit requestData) {
+
         return super.create(requestData);
     }
 
