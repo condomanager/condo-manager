@@ -34,25 +34,29 @@ public class ProfileController extends BaseEndpoint<Profile, Long> {
             throw new BadRequestException("Invalid credentials: a profile with this CPF is already registered");
     }
 
-    private void validateRequestDataForPersistence(Profile profile) {
-        if(profile.getResidence() != null) {
-            Optional<Residence> residence =  residenceDAO.retrieve(profile.getResidence().getId());
+    private void validateRequestDataForPersistence(Profile requestData) {
+        if(requestData.getName() == null || requestData.getName().trim().isEmpty())
+            throw new BadRequestException("Invalid data: a name is required");
+
+        if(requestData.getResidence() != null) {
+            Optional<Residence> residence =  residenceDAO.retrieve(requestData.getResidence().getId());
             if(!residence.isPresent())
-                throw new BadRequestException("Invalid data: Residence of ID " + profile.getResidence().getId() + " does not exists");
+                throw new BadRequestException("Invalid data: Residence of ID " + requestData.getResidence().getId() + " does not exists");
         }
 
-        if(profile.getPhones() == null)
-            profile.setPhones(new ArrayList<>());
-        if(!profile.getPhones().isEmpty())
-            profile.getPhones().stream().forEach(phone -> phone.setProfile(profile));
+        if(requestData.getPhones() == null)
+            requestData.setPhones(new ArrayList<>());
+        if(!requestData.getPhones().isEmpty())
+            requestData.getPhones().stream().forEach(phone -> phone.setProfile(requestData));
     }
 
     @Override
     protected Profile validateRequestDataForCreate(Profile requestData) {
+        validateUsername(requestData);
+
         if(requestData.getPassword() == null || requestData.getPassword().trim().isEmpty())
             throw new BadRequestException("Invalid credentials: a password is required");
 
-        validateUsername(requestData);
         validateRequestDataForPersistence(requestData);
         return requestData;
     }

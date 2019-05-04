@@ -33,9 +33,20 @@ public class SecurityAuthentication implements Serializable {
     public SecurityAuthentication(SecurityCredentials securityCredentials) {
         this.securityCredentials = securityCredentials;
         this.loginDate = new Date();
+        this.id = this.generateId();
+    }
 
-        String seed = this.securityCredentials.getId().toString() + "_" + String.valueOf(loginDate.getTime());
-        this.id = UUID.nameUUIDFromBytes(seed.getBytes()).toString();
+    public String generateId() {
+        //TODO: modificar o seed para que leve em conta a data + username + password
+        /*StringBuilder seed = new StringBuilder()
+                .append(loginDate)
+                .append(this.securityCredentials.getUsername())
+                .append(this.securityCredentials.getPassword());*/
+        StringBuilder seed = new StringBuilder()
+                .append(this.securityCredentials.getId())
+                .append("_")
+                .append(loginDate.getTime());
+        return UUID.nameUUIDFromBytes(seed.toString().getBytes()).toString();
     }
 
 }
