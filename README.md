@@ -8,7 +8,11 @@ For now, it's possible to:
 
 * Create a new user profile
 * Authenticate as an existent user
-* Once authenticated, update it's own user profile
-* Create and manager a visit
+* Once authenticated as the system admin, manage the `groups` x `residences` hierarchy of the condominium (e.g. blocks and apartments on each block)
+* Once authenticated as a concierge, register a new visit for a specific residence and authorize or deny the entrance of this visit
+* Once authenticated as a dweller:
+  * update its own user profile
+  * see all visits registered for its own residence
+  * manage a list of authorized visitor that should be allowed direclty when visiting
 
 Check the wiki for more details about how it all works.
