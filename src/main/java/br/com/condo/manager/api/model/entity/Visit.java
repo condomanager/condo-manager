@@ -19,14 +19,20 @@ public class Visit implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String name;
+    @ManyToOne
+    private Residence residence;
+
+    @ManyToOne
+    private Visitor visitor;
+
+    @ManyToOne
+    private Profile author;
 
     @Column
     private String licensePlate;
 
     @Column
-    private String document;
+    private Date createDate;
 
     @Column
     private Date authorizeDate;
@@ -38,15 +44,9 @@ public class Visit implements Serializable {
     private Date departureDate;
 
     @Column
-    private Date cancelDate;
+    private Date deleteDate;
 
     @Column
     private String observation;
-
-    @ManyToOne
-    private Residence residence;
-
-    @ManyToOne
-    private Visitor visitor;
 
 }

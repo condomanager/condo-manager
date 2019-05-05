@@ -1,11 +1,13 @@
 package br.com.condo.manager.api.controller;
 
 
+import br.com.condo.manager.api.model.entity.Profile;
 import br.com.condo.manager.api.model.entity.Residence;
 import br.com.condo.manager.api.model.entity.Visitor;
 import br.com.condo.manager.api.service.ResidenceDAO;
 import br.com.condo.manager.arch.controller.exception.BadRequestException;
 import br.com.condo.manager.arch.controller.exception.NotFoundException;
+import br.com.condo.manager.arch.model.entity.security.SecurityCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,6 +47,11 @@ public class VisitorController extends ResidenceDependentEndpoint<Visitor, Long>
             throw new BadRequestException("Invalid data: a Residence of ID " + requestData.getResidence().getId() + " was not found");
 
         validateRequestDataForPersistence(requestData);
+
+        SecurityCredentials credentials = securityUtils.authenticatedCredentials();
+        Profile author = profileDAO.retrieve(credentials.getId()).get();
+
+        requestData.setAuthor(author);
         return  requestData;
     }
 

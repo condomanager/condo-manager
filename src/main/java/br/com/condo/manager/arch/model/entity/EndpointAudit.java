@@ -28,6 +28,7 @@ public class EndpointAudit implements Serializable {
     @Column(name="action")
     private String action;
 
+    @Lob
     @Column(name="payload")
     private String payload;
 

@@ -19,6 +19,12 @@ public class Visitor implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    private Residence residence;
+
+    @ManyToOne
+    private Profile author;
+
     @Column
     private String name;
 
@@ -36,9 +42,6 @@ public class Visitor implements Serializable {
 
     @Column
     private String observation;
-
-    @ManyToOne
-    private Residence residence;
 
     @JsonIgnore
     @OneToMany(mappedBy = "visitor")

@@ -13,7 +13,7 @@ public class VisitDAO extends BaseSpringDataDAO<Visit, Long> {
 
     @Override
     public void delete(Visit entity) {
-        entity.setCancelDate(new Date());
+        entity.setDeleteDate(new Date());
         super.update(entity);
     }
 
@@ -37,7 +37,7 @@ public class VisitDAO extends BaseSpringDataDAO<Visit, Long> {
     @Override
     protected Collection<SearchParameter> defaultSearchParameters() {
         List<SearchParameter> searchParameters = new ArrayList<>();
-        searchParameters.add(new SearchParameter("cancelDate", SearchParameter.Operator.IS_NULL));
+        searchParameters.add(new SearchParameter("deleteDate", SearchParameter.Operator.IS_NULL));
         return searchParameters;
     }
 }
