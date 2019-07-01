@@ -57,6 +57,12 @@
 			<version>8.0.15</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+
 		<!-- https://github.com/google/guava -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
